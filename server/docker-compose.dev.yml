@@ -1,0 +1,36 @@
+services:
+  pgsql:
+    container_name: telegram-watcher-pgsql
+    image: postgres:16
+    environment:
+      POSTGRES_DB: watcher
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
+    ports:
+      - "5452:5432"
+#    volumes:
+#      - ../../database/sql/pgsql/schema.sql:/docker-entrypoint-initdb.d/import.sql
+
+  nginx:
+    container_name: telegram-watcher-nginx
+    image: nginx:latest
+    environment:
+      XDEBUG_START_WITH_REQUEST: 1
+      XDEBUG_DISCOVER_CLIENT_HOST: 0
+      XDEBUG_CLIENT_HOST: localhost
+      XDEBUG_CLIENT_PORT: 9003
+      XDEBUG_REMOTE_HANDLER: dbgp
+      XDEBUG_MAX_NESTING_LEVEL: 400
+    ports:
+      - "80:8080"
+    volumes:
+      - ..:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+
+  php-fpm:
+    container_name: telegram-watcher-php
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/var/www/html
