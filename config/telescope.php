@@ -18,6 +18,8 @@ return [
 
     'enabled' => env('TELESCOPE_ENABLED', true),
 
+    'admin_email' => env('TELESCOPE_ADMIN_EMAIL'),
+
     /*
     |--------------------------------------------------------------------------
     | Telescope Domain
