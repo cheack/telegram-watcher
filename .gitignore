@@ -1,5 +1,6 @@
 /vendor
 /node_modules
+/public/build
 .env
 .phpstorm.meta.php
 _ide_helper.php
