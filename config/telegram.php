@@ -3,6 +3,11 @@
 use Telegram\Bot\Commands\HelpCommand;
 
 return [
+    'app' => [
+        'id' => env('TELEGRAM_APP_ID'),
+        'hash' => env('TELEGRAM_APP_HASH'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Your Telegram Bots
@@ -31,10 +36,11 @@ return [
     |             ]
     */
     'bots' => [
-        'mybot' => [
-            'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR-BOT-TOKEN'),
+        'notify_bot' => [
+            'token' => env('TELEGRAM_NOTIFY_BOT_TOKEN'),
             'certificate_path' => env('TELEGRAM_CERTIFICATE_PATH', 'YOUR-CERTIFICATE-PATH'),
             'webhook_url' => env('TELEGRAM_WEBHOOK_URL', 'YOUR-BOT-WEBHOOK-URL'),
+            'group_id' => env('TELEGRAM_NOTIFY_GROUP_ID'),
             /*
              * @see https://core.telegram.org/bots/api#update
              */
