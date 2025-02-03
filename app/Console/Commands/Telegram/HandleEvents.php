@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Telegram;
 
-use App\Services\Telegram\UpdateHandler;
+use App\Jobs\HandleTelegramUpdates;
 use Illuminate\Console\Command;
 
 class HandleEvents extends Command
@@ -12,6 +12,6 @@ class HandleEvents extends Command
 
     public function handle(): void
     {
-        UpdateHandler::startAndLoop('session.madeline');
+        HandleTelegramUpdates::dispatch();
     }
 }
