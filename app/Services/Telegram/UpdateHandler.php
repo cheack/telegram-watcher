@@ -27,7 +27,7 @@ class UpdateHandler extends SimpleEventHandler
     #[Handler]
     public function handlePrivateMessage(Incoming & PrivateMessage $message): void
     {
-        \File::append(storage_path('telegram.log'), json_encode($message->jsonSerialize(), JSON_PRETTY_PRINT) . "\n\n");
+//        \File::append(storage_path('telegram.log'), json_encode($message->jsonSerialize(), JSON_PRETTY_PRINT) . "\n\n");
 
         $chat = $this->getChatInfo($message->chatId);
 
