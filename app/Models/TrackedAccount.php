@@ -30,4 +30,9 @@ class TrackedAccount extends Model
     {
         return $this->belongsTo(User::class, 'notification_user_id');
     }
+
+    public function trustedResources()
+    {
+        return $this->hasMany(TrustedResource::class);
+    }
 }

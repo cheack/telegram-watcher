@@ -9,7 +9,9 @@ class TrustedResource extends Model
     protected $fillable = [
         'user_id',
         'service_id',
+        'resource_id',
         'resource_name',
+        'tracked_account_id',
     ];
 
     public function user()
@@ -20,5 +22,10 @@ class TrustedResource extends Model
     public function service()
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function trackedAccount()
+    {
+        return $this->belongsTo(TrackedAccount::class);
     }
 }

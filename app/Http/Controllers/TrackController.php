@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TrackedAccount;
+use App\Models\TrustedResource;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -42,6 +43,9 @@ class TrackController extends Controller
             'account_id' => ['required', 'string'],
             'account_name' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
+            'trusted_resources' => ['nullable', 'array'],
+            'trusted_resources.*.resource_id' => ['required', 'string'],
+            'trusted_resources.*.resource_name' => ['required', 'string'],
         ]);
 
         $data = [
@@ -58,8 +62,30 @@ class TrackController extends Controller
         } else {
             $data['user_id'] = $request->user()->id;
             $data['notification_user_id'] = $request->user()->id;
-            TrackedAccount::create($data);
+            $trackedAccount = TrackedAccount::create($data);
             $message = 'tracked-account-added';
+        }
+
+        if ($request->has('trusted_resources')) {
+            $existingResources = $trackedAccount->trustedResources->pluck('id')->toArray();
+            $updatedResources = [];
+
+            foreach ($request->trusted_resources as $resource) {
+                $trustedResource = TrustedResource::firstOrCreate(['id' => $resource['id']]);
+                $trustedResource->fill([
+                    'user_id' => $request->user()->id,
+                    'service_id' => $request->service_id,
+                    'resource_id' => $resource['resource_id'],
+                    'resource_name' => $resource['resource_name'],
+                    'tracked_account_id' => $trackedAccount->id,
+                ]);
+                $trustedResource->save();
+                $updatedResources[] = $trustedResource->id;
+            }
+
+            // Delete resources that were removed.
+            $resourcesToDelete = array_diff($existingResources, $updatedResources);
+            TrustedResource::whereIn('id', $resourcesToDelete)->delete();
         }
 
         return back()->with('status', $message);

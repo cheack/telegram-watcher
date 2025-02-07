@@ -53,6 +53,26 @@
                     <x-textarea id="notes" name="notes" class="mt-1 block w-full">{{ $trackedAccount->notes ?? '' }}</x-textarea>
                 </div>
 
+                <!-- Trusted Resources -->
+                <div>
+                    <x-input-label :value="__('Trusted Resources')" />
+                    <div id="trusted-resources">
+                        @if(isset($trackedAccount) && $trackedAccount->trustedResources->isNotEmpty())
+                            @foreach($trackedAccount->trustedResources as $resource)
+                                <div class="trusted-resource mt-2">
+                                    <x-input-label for="resource_id" :value="__('Resource ID')" />
+                                    <x-text-input name="trusted_resources[{{ $loop->index }}][resource_id]" type="text" class="mt-1 block w-full" value="{{ $resource->resource_id }}" />
+                                    <x-input-label for="resource_name" :value="__('Resource Name')" />
+                                    <x-text-input name="trusted_resources[{{ $loop->index }}][resource_name]" type="text" class="mt-1 block w-full" value="{{ $resource->resource_name }}" />
+                                    <input type="hidden" name="trusted_resources[{{ $loop->index }}][id]" value="{{ $resource->id }}">
+                                    <button type="button" class="remove-resource text-red-500 mt-2">Remove</button>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+                    <button type="button" id="add-resource" class="mt-2 text-blue-500">Add Resource</button>
+                </div>
+
                 <div class="flex items-center gap-4">
                     <x-primary-button>
                         {{ isset($trackedAccount) ? __('Update Account') : __('Add Account') }}
@@ -61,4 +81,27 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.getElementById('add-resource').addEventListener('click', function() {
+            const resourceContainer = document.getElementById('trusted-resources');
+            const index = resourceContainer.querySelectorAll('.trusted-resource').length;
+            const newResource = document.createElement('div');
+            newResource.classList.add('trusted-resource', 'mt-2');
+            newResource.innerHTML = `
+            <x-input-label for="resource_id" :value="__('Resource ID')" />
+            <x-text-input name="trusted_resources[${index}][resource_id]" type="text" class="mt-1 block w-full" />
+            <x-input-label for="resource_name" :value="__('Resource Name')" />
+            <x-text-input name="trusted_resources[${index}][resource_name]" type="text" class="mt-1 block w-full" />
+            <button type="button" class="remove-resource text-red-500 mt-2">Remove</button>
+        `;
+            resourceContainer.appendChild(newResource);
+        });
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('remove-resource')) {
+                event.target.closest('.trusted-resource').remove();
+            }
+        });
+    </script>
 </x-app-layout>
