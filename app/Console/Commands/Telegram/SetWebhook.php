@@ -16,7 +16,7 @@ class SetWebhook extends Command
     {
         $token = config('telegram.bots.notify_bot.token');
         $url = str(config('telegram.bots.notify_bot.webhook_url'))
-            ->replace('<token>', $token);
+            ->replace('<token>', $token)->toString();
         $api = new Api(config('telegram.bots.notify_bot.token'));
         $result = $api->setWebhook(['url' => $url]);
 
