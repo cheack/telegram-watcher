@@ -13,7 +13,7 @@ class TelegramController extends Controller
     {
         $api = new Api();
         $update = $api->getWebhookUpdate();
-        if ($update->message->hasCommand()) {
+        if ($update->message?->hasCommand()) {
             $messageParts = str($update->message->text)->explode(' ');
             $command = $messageParts->first();
             $text = $messageParts->except(0)->implode(' ') ?: '[no text]';
