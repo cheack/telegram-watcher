@@ -14,7 +14,7 @@ class ManageTelegramHandler extends Command
 
     protected $description = 'Manage the Telegram handler process (start, check, restart)';
 
-    public function handle()
+    public function handle(): int
     {
         if ($this->option('start')) {
             $this->startProcess();
@@ -33,8 +33,13 @@ class ManageTelegramHandler extends Command
     /**
      * Start the Telegram handler process in the background.
      */
-    protected function startProcess()
+    protected function startProcess(): void
     {
+        if ($this->isProcessRunning()) {
+            $this->info('Telegram handler is already running.');
+            return;
+        }
+
         $command = 'nohup php artisan telegram:handle > /tmp/telegram.log 2>&1 &';
         exec($command);
 
@@ -44,7 +49,7 @@ class ManageTelegramHandler extends Command
     /**
      * Check if the Telegram handler process is running.
      */
-    protected function checkProcess()
+    protected function checkProcess(): void
     {
         if (!$this->isProcessRunning()) {
             $this->info('Telegram handler is not running.');
