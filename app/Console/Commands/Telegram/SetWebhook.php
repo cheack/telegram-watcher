@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands\Telegram;
 
-use App\Services\Telegram\Notifier;
+use App\Services\Telegram\Api;
 use Illuminate\Console\Command;
-use Telegram\Bot\Api;
-use Telegram\Bot\Laravel\Facades\Telegram;
 
 class SetWebhook extends Command
 {
@@ -17,7 +15,7 @@ class SetWebhook extends Command
         $token = config('telegram.bots.notify_bot.token');
         $url = str(config('telegram.bots.notify_bot.webhook_url'))
             ->replace('<token>', $token)->toString();
-        $api = new Api(config('telegram.bots.notify_bot.token'));
+        $api = new Api();
         $result = $api->setWebhook(['url' => $url]);
 
         if ($result) {
