@@ -35,7 +35,7 @@ class ManageTelegramHandler extends Command
      */
     protected function startProcess()
     {
-        $command = 'nohup php artisan telegram:handle --daemon > /tmp/telegram.log 2>&1 &';
+        $command = 'nohup php artisan telegram:handle > /tmp/telegram.log 2>&1 &';
         exec($command);
 
         $this->info('Telegram handler started in the background.');
