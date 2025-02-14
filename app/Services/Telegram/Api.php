@@ -2,8 +2,8 @@
 
 namespace App\Services\Telegram;
 
-
 use Telegram\Bot\Api as BotApi;
+use Telegram\Bot\Objects\WebhookInfo;
 
 class Api
 {
@@ -19,6 +19,10 @@ class Api
             'chat_id' => $chatId,
             'text' => $message,
         ]);
+    }
+
+    public function getWebhookInfo(): WebhookInfo {
+        return $this->api->getWebhookInfo();
     }
 
     public function setWebhook(array $params): bool {
