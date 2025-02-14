@@ -6,14 +6,13 @@ use App\Services\Telegram\Api;
 use App\Services\Telegram\Notifier;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Telegram\Bot\Laravel\Facades\Telegram;
 
 class TelegramController extends Controller
 {
     public function webhook(string $token, Request $request): Response
     {
         $api = new Api();
-        $update = Telegram::getWebhookUpdate();
+        $update = $api->getWebhookUpdate();
         if ($update->message->hasCommand()) {
             $messageParts = str($update->message->text)->explode(' ');
             $command = $messageParts->first();

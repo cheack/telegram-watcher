@@ -3,6 +3,7 @@
 namespace App\Services\Telegram;
 
 use Telegram\Bot\Api as BotApi;
+use Telegram\Bot\Objects\Update as UpdateObject;
 use Telegram\Bot\Objects\WebhookInfo;
 
 class Api
@@ -23,6 +24,10 @@ class Api
 
     public function getWebhookInfo(): WebhookInfo {
         return $this->api->getWebhookInfo();
+    }
+
+    public function getWebhookUpdate(): UpdateObject {
+        return $this->api->getWebhookUpdate();
     }
 
     public function setWebhook(array $params): bool {
