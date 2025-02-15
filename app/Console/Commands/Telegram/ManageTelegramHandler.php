@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Telegram;
 
-use App\Services\Telegram\UpdateHandler;
+use App\Services\Telegram\UpdateHandlerManager;
 use Illuminate\Console\Command;
 
 class ManageTelegramHandler extends Command
@@ -14,8 +14,12 @@ class ManageTelegramHandler extends Command
 
     protected $description = 'Manage the Telegram handler process (start, check, restart)';
 
+    protected UpdateHandlerManager $manager;
+
     public function handle(): int
     {
+        $this->manager = new UpdateHandlerManager();
+
         if ($this->option('start')) {
             $this->startProcess();
         } elseif ($this->option('check')) {
@@ -35,13 +39,12 @@ class ManageTelegramHandler extends Command
      */
     protected function startProcess(): void
     {
-        if ($this->isProcessRunning()) {
+        if ($this->manager->isProcessRunning()) {
             $this->info('Telegram handler is already running.');
             return;
         }
 
-        $command = 'nohup php artisan telegram:handle > /tmp/telegram.log 2>&1 &';
-        exec($command);
+        $this->manager->startProcess();
 
         $this->info('Telegram handler started in the background.');
     }
@@ -51,7 +54,7 @@ class ManageTelegramHandler extends Command
      */
     protected function checkProcess(): void
     {
-        if (!$this->isProcessRunning()) {
+        if (!$this->manager->isProcessRunning()) {
             $this->info('Telegram handler is not running.');
         } else {
             $this->info('Telegram handler is running.');
@@ -63,13 +66,12 @@ class ManageTelegramHandler extends Command
      */
     protected function restartProcess(): void
     {
-        if ($this->isProcessRunning()) {
-            $this->info('Stopping the Telegram handler...');
+        if ($this->manager->isProcessRunning()) {
             $this->stopProcess();
         }
 
         $this->info('Starting the Telegram handler...');
-        $this->startProcess();
+        $this->manager->startProcess();
     }
 
     /**
@@ -77,24 +79,8 @@ class ManageTelegramHandler extends Command
      */
     protected function stopProcess(): void
     {
-        $processName = 'telegram:handle';
-        $command = "ps aux | grep '[a]rtisan $processName' | awk '{print $2}' | xargs kill -9";
-        exec($command);
-
+        $this->info('Stopping the Telegram handler...');
+        $this->manager->stopProcess();
         $this->info('Telegram handler stopped.');
-    }
-
-    /**
-     * Check if the Telegram handler process is running.
-     *
-     * @return bool
-     */
-    protected function isProcessRunning(): bool
-    {
-        $processName = 'telegram:handle';
-        $command = "ps aux | grep '[a]rtisan $processName'";
-        exec($command, $output, $returnVar);
-
-        return !empty($output);
     }
 }

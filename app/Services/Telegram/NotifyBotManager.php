@@ -24,9 +24,37 @@ class NotifyBotManager
     public function executeCommand(): void
     {
         match ($this->command) {
-            '/test' => $this->testCommand(),
-            '/test_notify' => $this->testNotifyCommand(),
+            'handler_get_status' => $this->getHandlerStatusCommand(),
+            'handler_stop' => $this->getHandlerStopCommand(),
+            'handler_start' => $this->getHandlerStartCommand(),
+            'handler_restart' => $this->getHandlerRestartCommand(),
+            'test' => $this->testCommand(),
+            'test_notify' => $this->testNotifyCommand(),
         };
+    }
+
+    private function getHandlerStatusCommand(): void
+    {
+        $message = new UpdateHandlerManager()->isProcessRunning() ? 'Running' : 'Not running';
+        $this->api->sendMessage($message, $this->chatId);
+    }
+
+    private function getHandlerStopCommand(): void
+    {
+        new UpdateHandlerManager()->stopProcess();
+        $this->api->sendMessage('Stopped', $this->chatId);
+    }
+
+    private function getHandlerStartCommand(): void
+    {
+        new UpdateHandlerManager()->startProcess();
+        $this->api->sendMessage('Started', $this->chatId);
+    }
+
+    private function getHandlerRestartCommand(): void
+    {
+        new UpdateHandlerManager()->restartProcess();
+        $this->api->sendMessage('Restarted', $this->chatId);
     }
 
     private function testCommand(): void
@@ -40,7 +68,7 @@ class NotifyBotManager
     }
 
     private function getCommand(): string {
-        return str($this->update->message->text)->explode(' ')->first();
+        return str($this->update->message->text)->ltrim('/')->explode(' ')->first();
     }
 
     private function getCommandText(): string {
