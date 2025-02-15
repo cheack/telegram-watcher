@@ -30,41 +30,47 @@ class NotifyBotManager
             'handler_restart' => $this->getHandlerRestartCommand(),
             'test' => $this->testCommand(),
             'test_notify' => $this->testNotifyCommand(),
+            default => $this->unknownCommand(),
         };
     }
 
     private function getHandlerStatusCommand(): void
     {
         $message = new UpdateHandlerManager()->isProcessRunning() ? 'Running' : 'Not running';
-        $this->api->sendMessage($message, $this->chatId);
+        $this->sendMessage($message);
     }
 
     private function getHandlerStopCommand(): void
     {
         new UpdateHandlerManager()->stopProcess();
-        $this->api->sendMessage('Stopped', $this->chatId);
+        $this->sendMessage('Stopped');
     }
 
     private function getHandlerStartCommand(): void
     {
         new UpdateHandlerManager()->startProcess();
-        $this->api->sendMessage('Started', $this->chatId);
+        $this->sendMessage('Started');
     }
 
     private function getHandlerRestartCommand(): void
     {
         new UpdateHandlerManager()->restartProcess();
-        $this->api->sendMessage('Restarted', $this->chatId);
+        $this->sendMessage('Restarted');
     }
 
     private function testCommand(): void
     {
-        $this->api->sendMessage("Test message: $this->text", $this->chatId);
+        $this->sendMessage("Test message: $this->text");
     }
 
     private function testNotifyCommand(): void
     {
         new Notifier()->sendMessage("Test notify message: $this->text");
+    }
+
+    private function unknownCommand(): void
+    {
+        $this->sendMessage("Unknown command");
     }
 
     private function getCommand(): string {
@@ -74,5 +80,9 @@ class NotifyBotManager
     private function getCommandText(): string {
         $messageParts = str($this->update->message->text)->explode(' ');
         return $messageParts->except(0)->implode(' ') ?: '[no text]';
+    }
+
+    private function sendMessage(string $message): void {
+        $this->api->sendMessage($message, $this->chatId);
     }
 }
