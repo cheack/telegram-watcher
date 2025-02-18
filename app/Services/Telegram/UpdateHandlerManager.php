@@ -13,7 +13,8 @@ class UpdateHandlerManager
             return;
         }
 
-        $command = 'nohup php artisan telegram:handle > /tmp/telegram.log 2>&1 &';
+        $logFile = storage_path('logs/telegram.log');
+        $command = "nohup php artisan telegram:handle > $logFile 2>&1 &";
         exec($command);
     }
 
