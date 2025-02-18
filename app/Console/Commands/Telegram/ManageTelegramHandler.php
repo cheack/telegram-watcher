@@ -9,8 +9,9 @@ class ManageTelegramHandler extends Command
 {
     protected $signature = 'telegram:manage 
                             {--start : Start the Telegram handler in the background}
-                            {--check : Check if the Telegram handler is running}
-                            {--restart : Restart the Telegram handler process}';
+                            {--stop : Stop the Telegram handler process}
+                            {--restart : Restart the Telegram handler process}
+                            {--status : Check if the Telegram handler is running}';
 
     protected $description = 'Manage the Telegram handler process (start, check, restart)';
 
@@ -22,12 +23,14 @@ class ManageTelegramHandler extends Command
 
         if ($this->option('start')) {
             $this->startProcess();
-        } elseif ($this->option('check')) {
+        } elseif ($this->option('status')) {
             $this->checkProcess();
         } elseif ($this->option('restart')) {
             $this->restartProcess();
+        } elseif ($this->option('stop')) {
+            $this->stopProcess();
         } else {
-            $this->error('Please specify an option: --start, --check, or --restart');
+            $this->error('Please specify an option: --start, --stop, --restart, or --status');
             return 1;
         }
 
