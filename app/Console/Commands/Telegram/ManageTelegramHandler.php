@@ -94,6 +94,7 @@ class ManageTelegramHandler extends Command
         $info = $this->manager->getLogFileInfo();
         if (!$info) {
             $this->error("Can't get log file info.");
+            return;
         }
 
         $this->info("Log file: {$info['path']}");
