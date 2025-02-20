@@ -221,4 +221,6 @@ return [
         // 'stop' => Acme\Project\Commands\StopCommand::class,
         // 'status' => Acme\Project\Commands\StatusCommand::class,
     ],
+
+    'log_path' => env('TELEGRAM_LOG_PATH', storage_path('logs/telegram.log')),
 ];

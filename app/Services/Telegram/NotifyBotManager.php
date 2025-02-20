@@ -36,7 +36,11 @@ class NotifyBotManager
 
     private function getHandlerStatusCommand(): void
     {
-        $message = new UpdateHandlerManager()->isProcessRunning() ? 'Running' : 'Not running';
+        $manager = new UpdateHandlerManager();
+        $logInfo = $manager->getLogFileInfo();
+
+        $message = $manager->isProcessRunning() ? 'Running' : 'Not running';
+        $message .= "\nLog:" . var_export($logInfo, true);
         $this->sendMessage($message);
     }
 

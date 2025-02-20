@@ -62,6 +62,8 @@ class ManageTelegramHandler extends Command
         } else {
             $this->info('Telegram handler is running.');
         }
+
+        $this->showLogInfo();
     }
 
     /**
@@ -85,5 +87,19 @@ class ManageTelegramHandler extends Command
         $this->info('Stopping the Telegram handler...');
         $this->manager->stopProcess();
         $this->info('Telegram handler stopped.');
+    }
+
+    protected function showLogInfo(): void
+    {
+        $info = $this->manager->getLogFileInfo();
+        if (!$info) {
+            $this->error("Can't get log file info.");
+        }
+
+        $this->info("Log file: {$info['path']}");
+        $this->line("Size: {$info['size']} bytes.");
+        $this->line("Last Modified: {$info['last_modified']}");
+        $this->info("\nLast 25 lines of the log:");
+        $this->line(implode("\n", $info['last_lines']));
     }
 }
