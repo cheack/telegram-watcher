@@ -2,7 +2,6 @@
 /node_modules
 /public/build
 /public/MadelineProto.log
-/session.madeline
 .env
 .phpstorm.meta.php
 _ide_helper.php

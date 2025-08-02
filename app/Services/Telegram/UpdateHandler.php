@@ -18,7 +18,7 @@ class UpdateHandler extends SimpleEventHandler
 //        \File::append(storage_path('telegram.log'), json_encode($message->jsonSerialize(), JSON_PRETTY_PRINT) . "\n\n");
 
         $chat = $this->getChatInfo($message->chatId);
-        new Notifier()->sendMessage('Новый канал - ' . $chat['Chat']['title']);
+        $this->notify('Новый канал - ' . $chat['Chat']['title']);
 //        \File::append(storage_path('telegram.log'), json_encode($updates, JSON_PRETTY_PRINT) . "\n\n");
 //        $chat = $MadelineProto->getInfo($message->chatId);
 //        new Notifier()->sendMessage('Новый канал - ' . $chat['Chat']['title']);
@@ -33,11 +33,10 @@ class UpdateHandler extends SimpleEventHandler
 
         if (!$chat['User']['contact']) {
             $contact = $chat['User']['first_name'] . ' @' . $chat['User']['username'];
-            $notifier = new Notifier();
             if ($message->media) {
-                $notifier->sendMessage("Новое медиа от неизвестного контакта $contact");
+                $this->notify("Новое медиа от неизвестного контакта $contact");
             } else {
-                $notifier->sendMessage("Новое сообщение от неизвестного контакта $contact:\n\n" . $message->message);
+                $this->notify("Новое сообщение от неизвестного контакта $contact:\n\n" . $message->message);
             }
         }
     }
@@ -47,8 +46,19 @@ class UpdateHandler extends SimpleEventHandler
         $settings = new AppInfo()
             ->setApiId((int)config('telegram.app.id'))
             ->setApiHash(config('telegram.app.hash'));
-        $MadelineProto = new API('session.madeline', $settings);
+        $MadelineProto = new API($this->getSession(), $settings);
 
         return $MadelineProto->getInfo($chatId);
+    }
+
+    private function getSession(): string
+    {
+        return 'telegram_sessions/' . basename($this->getSessionName());
+    }
+
+    private function notify($message): void
+    {
+        $session = $this->getSession();
+        new Notifier()->sendMessage("$session: $message");
     }
 }
