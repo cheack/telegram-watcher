@@ -13,23 +13,25 @@ class UpdateHandler extends SimpleEventHandler
     #[Handler]
     public function handleChannel(UpdateChannel $message): void
     {
-//        \File::append(storage_path('telegram.log'), json_encode($message->jsonSerialize(), JSON_PRETTY_PRINT) . "\n\n");
-
         $chat = $this->getChatInfo($message->chatId);
+        $left = !empty($chat['Chat']['left']);
+
+        $cacheKey = "channel_update_{$message->chatId}_" . ($left ? 'left' : 'joined');
+        if (\Cache::has($cacheKey)) {
+            return;
+        }
+        \Cache::put($cacheKey, true, 10);
+
         $title = $chat['Chat']['title'];
         $username = $chat['Chat']['username'] ?? null;
         $link = $username ? "https://t.me/{$username}" : null;
-
         $titleText = $link ? "<a href=\"{$link}\">{$title}</a>" : "<b>{$title}</b>";
 
-        if (!empty($chat['Chat']['left'])) {
+        if ($left) {
             $this->notifyHtml("🚪 Покинут канал — {$titleText}");
         } else {
             $this->notifyHtml("📡 Новый канал — {$titleText}");
         }
-//        \File::append(storage_path('telegram.log'), json_encode($updates, JSON_PRETTY_PRINT) . "\n\n");
-//        $chat = $MadelineProto->getInfo($message->chatId);
-//        new Notifier()->sendMessage('Новый канал - ' . $chat['Chat']['title']);
     }
 
     #[Handler]
