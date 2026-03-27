@@ -1,0 +1,8 @@
+{
+    "telegram": {
+        "sessions": [
+            "account1",
+            "account2"
+        ]
+    }
+}

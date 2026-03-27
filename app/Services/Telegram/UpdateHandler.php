@@ -59,6 +59,10 @@ class UpdateHandler extends SimpleEventHandler
     private function notify($message): void
     {
         $session = $this->getSession();
-        new Notifier()->sendMessage("$session: $message");
+        try {
+            new Notifier()->sendMessage("$session: $message");
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Notifier failed: ' . $e->getMessage());
+        }
     }
 }

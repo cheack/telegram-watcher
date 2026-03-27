@@ -7,3 +7,6 @@
 _ide_helper.php
 _ide_helper_models.php
 MadelineProto.log
+nohup.out
+/public/.well-known/
+settings.json
