@@ -63,8 +63,9 @@ class NotifyBotManager
 
     private function getHandlerRestartCommand(): void
     {
+        $messageId = $this->sendMessage('⏳ Restarting...');
         new UpdateHandlerManager()->restartProcess();
-        $this->sendMessage('Restarted');
+        $this->api->editMessage('✅ Restarted', $this->chatId, $messageId);
     }
 
     private function testCommand(): void
@@ -92,7 +93,7 @@ class NotifyBotManager
         return $messageParts->except(0)->implode(' ') ?: '[no text]';
     }
 
-    private function sendMessage(string $message): void {
-        $this->api->sendMessage($message, $this->chatId);
+    private function sendMessage(string $message): int {
+        return $this->api->sendMessage($message, $this->chatId);
     }
 }

@@ -14,10 +14,21 @@ class Api
         $this->api = new BotApi(config('telegram.bots.notify_bot.token'));
     }
 
-    public function sendMessage(string $message, int $chatId): void
+    public function sendMessage(string $message, int $chatId): int
     {
-        $this->api->sendMessage([
+        $result = $this->api->sendMessage([
             'chat_id' => $chatId,
+            'text' => $message,
+        ]);
+
+        return $result->messageId;
+    }
+
+    public function editMessage(string $message, int $chatId, int $messageId): void
+    {
+        $this->api->editMessageText([
+            'chat_id' => $chatId,
+            'message_id' => $messageId,
             'text' => $message,
         ]);
     }
