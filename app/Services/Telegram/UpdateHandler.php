@@ -16,6 +16,11 @@ class UpdateHandler extends SimpleEventHandler
 //        \File::append(storage_path('telegram.log'), json_encode($message->jsonSerialize(), JSON_PRETTY_PRINT) . "\n\n");
 
         $chat = $this->getChatInfo($message->chatId);
+
+        if (!empty($chat['Chat']['left'])) {
+            return;
+        }
+
         $this->notify('Новый канал - ' . $chat['Chat']['title']);
 //        \File::append(storage_path('telegram.log'), json_encode($updates, JSON_PRETTY_PRINT) . "\n\n");
 //        $chat = $MadelineProto->getInfo($message->chatId);
