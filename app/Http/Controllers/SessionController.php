@@ -20,16 +20,24 @@ class SessionController extends Controller
     public function log(Request $request): JsonResponse
     {
         $session = $request->query('session');
-        $logInfo = (new UpdateHandlerManager())->getLogFileInfo();
+        $manager = new UpdateHandlerManager();
 
-        if (!$logInfo) {
-            return response()->json(['lines' => []]);
+        $allLines = $session
+            ? $manager->getLastLines(500)
+            : $manager->getLastLines(100);
+
+        if ($session) {
+            $sessions = new SessionManager();
+            $sessionData = collect($sessions->getSessions())->firstWhere('name', $session);
+            $internalName = $sessionData['internal_name'] ?? null;
+
+            $lines = array_filter($allLines, function ($line) use ($session, $internalName) {
+                return str_contains($line, "telegram_sessions/{$session}:")
+                    || ($internalName && str_contains($line, "{$internalName}:"));
+            });
+        } else {
+            $lines = $allLines;
         }
-
-        $lines = array_filter(
-            $logInfo['last_lines'],
-            fn($line) => !$session || str_contains($line, "telegram_sessions/{$session}")
-        );
 
         return response()->json(['lines' => array_values($lines)]);
     }

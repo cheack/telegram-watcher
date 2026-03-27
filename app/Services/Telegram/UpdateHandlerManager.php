@@ -90,6 +90,17 @@ class UpdateHandlerManager
         return count($output);
     }
 
+    public function getLastLines(int $numLines): array
+    {
+        $logPath = config('telegram.log_path');
+
+        if (!\File::exists($logPath)) {
+            return [];
+        }
+
+        return $this->readLastLines($logPath, $numLines);
+    }
+
     protected function readLastLines(string $filePath, int $numLines): array
     {
         $file = new \SplFileObject($filePath, 'r');
