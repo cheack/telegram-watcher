@@ -85,8 +85,9 @@ class NotifyBotManager
     private function getHandlerRestartCommand(): void
     {
         $messageId = $this->sendMessage('⏳ Restarting...');
-        new UpdateHandlerManager()->restartProcess();
-        $this->api->editMessage('✅ Restarted', $this->chatId, $messageId);
+        $pid = new UpdateHandlerManager()->restartProcess();
+        $result = $pid ? "✅ Restarted (PID: $pid)" : '✅ Restarted';
+        $this->api->editMessage($result, $this->chatId, $messageId);
     }
 
     private function testCommand(): void

@@ -37,7 +37,7 @@ class UpdateHandlerManager
     /**
      * Restart the Telegram handler process.
      */
-    public function restartProcess(): void
+    public function restartProcess(): ?int
     {
         if ($this->isProcessRunning()) {
             $this->stopProcess();
@@ -49,16 +49,18 @@ class UpdateHandlerManager
             }
         }
 
-        $this->forceStartProcess();
+        return $this->forceStartProcess();
     }
 
-    private function forceStartProcess(): void
+    private function forceStartProcess(): ?int
     {
         $logPath = config('telegram.log_path');
         $php = PHP_BINARY;
         $artisan = base_path('artisan');
-        $command = "nohup $php $artisan telegram:handle > $logPath 2>&1 &";
-        exec($command);
+        $command = "nohup $php $artisan telegram:handle > $logPath 2>&1 & echo $!";
+        exec($command, $output);
+
+        return isset($output[0]) ? (int) $output[0] : null;
     }
 
     /**
