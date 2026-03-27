@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\TrackController;
 use Illuminate\Support\Facades\Route;
@@ -11,6 +12,14 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'view'])->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->prefix('service')->name('service.')->group(function () {
+    Route::get('/', [ServiceController::class, 'index'])->name('index');
+    Route::get('/status', [ServiceController::class, 'status'])->name('status');
+    Route::post('/start', [ServiceController::class, 'start'])->name('start');
+    Route::post('/stop', [ServiceController::class, 'stop'])->name('stop');
+    Route::post('/restart', [ServiceController::class, 'restart'])->name('restart');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
