@@ -55,7 +55,9 @@ class UpdateHandlerManager
     private function forceStartProcess(): void
     {
         $logPath = config('telegram.log_path');
-        $command = "nohup php artisan telegram:handle > $logPath 2>&1 &";
+        $php = PHP_BINARY;
+        $artisan = base_path('artisan');
+        $command = "nohup $php $artisan telegram:handle > $logPath 2>&1 &";
         exec($command);
     }
 
