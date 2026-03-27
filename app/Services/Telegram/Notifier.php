@@ -10,8 +10,8 @@ class Notifier
         $this->api = new Api();
     }
 
-    public function sendMessage(string $message): void
+    public function sendMessage(string $message, string $parseMode = ''): void
     {
-        $this->api->sendMessage($message, config('telegram.bots.notify_bot.group_id'));
+        $this->api->sendMessage($message, config('telegram.bots.notify_bot.group_id'), $parseMode);
     }
 }

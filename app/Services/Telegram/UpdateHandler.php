@@ -16,12 +16,17 @@ class UpdateHandler extends SimpleEventHandler
 //        \File::append(storage_path('telegram.log'), json_encode($message->jsonSerialize(), JSON_PRETTY_PRINT) . "\n\n");
 
         $chat = $this->getChatInfo($message->chatId);
+        $title = $chat['Chat']['title'];
+        $username = $chat['Chat']['username'] ?? null;
+        $link = $username ? "https://t.me/{$username}" : null;
+
+        $titleText = $link ? "<a href=\"{$link}\">{$title}</a>" : "<b>{$title}</b>";
 
         if (!empty($chat['Chat']['left'])) {
-            return;
+            $this->notifyHtml("🚪 Покинут канал — {$titleText}");
+        } else {
+            $this->notifyHtml("📡 Новый канал — {$titleText}");
         }
-
-        $this->notify('Новый канал - ' . $chat['Chat']['title']);
 //        \File::append(storage_path('telegram.log'), json_encode($updates, JSON_PRETTY_PRINT) . "\n\n");
 //        $chat = $MadelineProto->getInfo($message->chatId);
 //        new Notifier()->sendMessage('Новый канал - ' . $chat['Chat']['title']);
@@ -54,11 +59,21 @@ class UpdateHandler extends SimpleEventHandler
         return 'telegram_sessions/' . basename($this->getSessionName());
     }
 
-    private function notify($message): void
+    private function notify(string $message): void
     {
         $session = $this->getSession();
         try {
             new Notifier()->sendMessage("$session: $message");
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Notifier failed: ' . $e->getMessage());
+        }
+    }
+
+    private function notifyHtml(string $message): void
+    {
+        $session = $this->getSession();
+        try {
+            new Notifier()->sendMessage("<code>{$session}</code>: $message", 'HTML');
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Notifier failed: ' . $e->getMessage());
         }
