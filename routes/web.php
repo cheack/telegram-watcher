@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\TrackController;
 use Illuminate\Support\Facades\Route;
@@ -12,6 +13,8 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'view'])->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->get('/sessions', [SessionController::class, 'index'])->name('sessions.index');
 
 Route::middleware('auth')->prefix('service')->name('service.')->group(function () {
     Route::get('/', [ServiceController::class, 'index'])->name('index');
