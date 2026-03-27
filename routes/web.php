@@ -14,7 +14,10 @@ Route::get('/', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'view'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->get('/sessions', [SessionController::class, 'index'])->name('sessions.index');
+Route::middleware('auth')->prefix('sessions')->name('sessions.')->group(function () {
+    Route::get('/', [SessionController::class, 'index'])->name('index');
+    Route::get('/log', [SessionController::class, 'log'])->name('log');
+});
 
 Route::middleware('auth')->prefix('service')->name('service.')->group(function () {
     Route::get('/', [ServiceController::class, 'index'])->name('index');
