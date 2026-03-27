@@ -13,14 +13,25 @@ class UpdateHandler extends SimpleEventHandler
     #[Handler]
     public function handleChannel(UpdateChannel $message): void
     {
-        $cacheKey = "channel_update_{$message->chatId}";
-        if (\Cache::has($cacheKey)) {
+        // Lock before async getInfo() to block concurrent duplicates
+        $processingKey = "channel_processing_{$message->chatId}";
+        if (\Cache::has($processingKey)) {
             return;
         }
-        \Cache::put($cacheKey, true, 30);
+        \Cache::put($processingKey, true, 10);
 
         $chat = $this->getChatInfo($message->chatId);
         $left = !empty($chat['Chat']['left']);
+
+        \Cache::forget($processingKey);
+
+        // Block repeated same-type events (join/leave) within 30s
+        $eventKey = "channel_event_{$message->chatId}_" . ($left ? 'left' : 'joined');
+        if (\Cache::has($eventKey)) {
+            return;
+        }
+        \Cache::put($eventKey, true, 30);
+
         $title = $chat['Chat']['title'];
         $username = $chat['Chat']['username'] ?? null;
         $link = $username ? "https://t.me/{$username}" : null;
