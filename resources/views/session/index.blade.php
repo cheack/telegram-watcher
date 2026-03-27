@@ -77,7 +77,7 @@
                         Auto-refresh
                     </label>
                 </div>
-                <pre id="log-output" class="bg-gray-950 text-xs rounded-lg p-4 overflow-auto h-80 font-mono whitespace-pre-wrap break-all" style="color: #86efac;"></pre>
+                <pre id="log-output" class="bg-gray-950 text-xs rounded-lg p-4 overflow-x-hidden overflow-y-auto h-80 font-mono" style="color: #86efac; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;"></pre>
             </div>
 
         </div>
