@@ -38,15 +38,36 @@ class NotifyBotManager
     {
         $manager = new UpdateHandlerManager();
         $logInfo = $manager->getLogFileInfo();
-
         $count = $manager->getProcessCount();
-        $message = match(true) {
-            $count === 0 => 'Not running',
-            $count === 1 => 'Running',
-            default => "WARNING: $count processes running (zombie?)",
+
+        $status = match(true) {
+            $count === 0 => '🔴 <b>Not running</b>',
+            $count === 1 => '🟢 <b>Running</b>',
+            default => "⚠️ <b>WARNING:</b> $count processes running (zombie?)",
         };
-        $message .= "\nLog:" . var_export($logInfo, true);
-        $this->sendMessage($message);
+
+        $lines = [];
+        $lines[] = $status;
+
+        if ($logInfo) {
+            $size = number_format($logInfo['size'] / 1024, 1) . ' KB';
+            $lines[] = '';
+            $lines[] = "📄 <code>{$logInfo['path']}</code>";
+            $lines[] = "📦 {$size} · 🕐 {$logInfo['last_modified']}";
+
+            $lastLines = implode("\n", array_slice(
+                array_filter($logInfo['last_lines'], fn($l) => trim($l) !== ''),
+                -10
+            ));
+            $lastLines = preg_replace('/\x1B\[[0-9;]*m/', '', $lastLines);
+
+            $lines[] = '';
+            $lines[] = '<pre>' . htmlspecialchars($lastLines) . '</pre>';
+        } else {
+            $lines[] = "\n📄 Log not found";
+        }
+
+        $this->api->sendMessage(implode("\n", $lines), $this->chatId, 'HTML');
     }
 
     private function getHandlerStopCommand(): void

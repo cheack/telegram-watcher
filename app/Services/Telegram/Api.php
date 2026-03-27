@@ -14,23 +14,24 @@ class Api
         $this->api = new BotApi(config('telegram.bots.notify_bot.token'));
     }
 
-    public function sendMessage(string $message, int $chatId): int
+    public function sendMessage(string $message, int $chatId, string $parseMode = ''): int
     {
-        $result = $this->api->sendMessage([
-            'chat_id' => $chatId,
-            'text' => $message,
-        ]);
+        $params = ['chat_id' => $chatId, 'text' => $message];
+        if ($parseMode) {
+            $params['parse_mode'] = $parseMode;
+        }
 
-        return $result->messageId;
+        return $this->api->sendMessage($params)->messageId;
     }
 
-    public function editMessage(string $message, int $chatId, int $messageId): void
+    public function editMessage(string $message, int $chatId, int $messageId, string $parseMode = ''): void
     {
-        $this->api->editMessageText([
-            'chat_id' => $chatId,
-            'message_id' => $messageId,
-            'text' => $message,
-        ]);
+        $params = ['chat_id' => $chatId, 'message_id' => $messageId, 'text' => $message];
+        if ($parseMode) {
+            $params['parse_mode'] = $parseMode;
+        }
+
+        $this->api->editMessageText($params);
     }
 
     public function getWebhookInfo(): WebhookInfo {
