@@ -41,9 +41,22 @@ class UpdateHandlerManager
     {
         if ($this->isProcessRunning()) {
             $this->stopProcess();
+
+            $attempts = 0;
+            while ($this->isProcessRunning() && $attempts < 10) {
+                usleep(500_000);
+                $attempts++;
+            }
         }
 
-        $this->startProcess();
+        $this->forceStartProcess();
+    }
+
+    private function forceStartProcess(): void
+    {
+        $logPath = config('telegram.log_path');
+        $command = "nohup php artisan telegram:handle > $logPath 2>&1 &";
+        exec($command);
     }
 
     /**
@@ -61,11 +74,16 @@ class UpdateHandlerManager
      */
     public function isProcessRunning(): bool
     {
+        return $this->getProcessCount() > 0;
+    }
+
+    public function getProcessCount(): int
+    {
         $processName = 'telegram:handle';
         $command = "ps aux | grep '[a]rtisan $processName'";
-        exec($command, $output, $returnVar);
+        exec($command, $output);
 
-        return !empty($output);
+        return count($output);
     }
 
     protected function readLastLines(string $filePath, int $numLines): array

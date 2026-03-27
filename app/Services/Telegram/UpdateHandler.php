@@ -2,12 +2,10 @@
 
 namespace App\Services\Telegram;
 
-use danog\MadelineProto\API;
 use danog\MadelineProto\EventHandler\Attributes\Handler;
 use danog\MadelineProto\EventHandler\Channel\UpdateChannel;
 use danog\MadelineProto\EventHandler\Message\PrivateMessage;
 use danog\MadelineProto\EventHandler\SimpleFilter\Incoming;
-use danog\MadelineProto\Settings\AppInfo;
 use danog\MadelineProto\SimpleEventHandler;
 
 class UpdateHandler extends SimpleEventHandler
@@ -43,12 +41,7 @@ class UpdateHandler extends SimpleEventHandler
 
     private function getChatInfo(int $chatId): array
     {
-        $settings = new AppInfo()
-            ->setApiId((int)config('telegram.app.id'))
-            ->setApiHash(config('telegram.app.hash'));
-        $MadelineProto = new API($this->getSession(), $settings);
-
-        return $MadelineProto->getInfo($chatId);
+        return $this->getInfo($chatId);
     }
 
     private function getSession(): string

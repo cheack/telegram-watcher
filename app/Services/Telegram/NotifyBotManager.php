@@ -39,7 +39,12 @@ class NotifyBotManager
         $manager = new UpdateHandlerManager();
         $logInfo = $manager->getLogFileInfo();
 
-        $message = $manager->isProcessRunning() ? 'Running' : 'Not running';
+        $count = $manager->getProcessCount();
+        $message = match(true) {
+            $count === 0 => 'Not running',
+            $count === 1 => 'Running',
+            default => "WARNING: $count processes running (zombie?)",
+        };
         $message .= "\nLog:" . var_export($logInfo, true);
         $this->sendMessage($message);
     }
@@ -78,7 +83,8 @@ class NotifyBotManager
     }
 
     private function getCommand(): string {
-        return str($this->update->message->text)->ltrim('/')->explode(' ')->first();
+        $command = str($this->update->message->text)->ltrim('/')->explode(' ')->first();
+        return str($command)->explode('@')->first();
     }
 
     private function getCommandText(): string {
