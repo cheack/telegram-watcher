@@ -15,6 +15,7 @@ class HandleEvents extends Command
     public function handle(): void
     {
         $sessions = Settings::get('telegram.sessions', []);
+
         if (!$sessions) {
             $this->error('No active Telegram sessions found. Please log in first.');
             return;
@@ -24,6 +25,7 @@ class HandleEvents extends Command
         foreach ($sessions as $session) {
             $MadelineProtos[] = new API('telegram_sessions/' . $session);
         }
+
         API::startAndLoopMulti($MadelineProtos, UpdateHandler::class);
     }
 }

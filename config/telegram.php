@@ -223,4 +223,8 @@ return [
     ],
 
     'log_path' => env('TELEGRAM_LOG_PATH', storage_path('logs/telegram.log')),
+
+    'handler' => [
+        'php_binary' => env('HANDLER_PHP_BINARY', PHP_BINARY),
+    ],
 ];

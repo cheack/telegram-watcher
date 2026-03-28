@@ -68,11 +68,11 @@
             } else if (data.count === 1) {
                 indicator.textContent = '🟢';
                 text.textContent = 'Running';
-                pidEl.textContent = '';
+                pidEl.textContent = `PID: ${data.pids.join(', ')}`;
             } else {
                 indicator.textContent = '⚠️';
                 text.textContent = `Warning: ${data.count} processes`;
-                pidEl.textContent = '';
+                pidEl.textContent = `PIDs: ${data.pids.join(', ')}`;
             }
 
             if (data.log) {
@@ -88,21 +88,31 @@
         }
 
         async function action(type) {
+            if (type === 'stop' && !confirm('Stop the service?')) return;
+
             const indicator = document.getElementById('status-indicator');
             const text = document.getElementById('status-text');
             indicator.textContent = '⏳';
             text.textContent = type === 'restart' ? 'Restarting...' : (type === 'start' ? 'Starting...' : 'Stopping...');
 
-            const res = await fetch(`{{ url('/service') }}/${type}`, {
+            await fetch(`{{ url('/service') }}/${type}`, {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' },
             });
-            const data = await res.json();
 
-            if (type === 'restart' && data.pid) {
-                document.getElementById('status-pid').textContent = `PID: ${data.pid}`;
+            // Poll until status matches expected state
+            const wantRunning = type !== 'stop';
+            const deadline = Date.now() + 15000;
+            while (Date.now() < deadline) {
+                await new Promise(r => setTimeout(r, 700));
+                const res = await fetch('{{ route('service.status') }}');
+                const data = await res.json();
+                const isRunning = data.count > 0;
+                if (isRunning === wantRunning) {
+                    await fetchStatus();
+                    return;
+                }
             }
-
             await fetchStatus();
         }
 

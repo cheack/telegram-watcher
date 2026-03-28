@@ -22,6 +22,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'count' => $count,
+            'pids' => $manager->getProcessIds(),
             'log' => $logInfo,
         ]);
     }
@@ -45,8 +46,8 @@ class ServiceController extends Controller
     public function restart(): JsonResponse
     {
         $manager = new UpdateHandlerManager();
-        $pid = $manager->restartProcess();
+        $manager->restartProcess();
 
-        return response()->json(['ok' => true, 'pid' => $pid]);
+        return response()->json(['ok' => true]);
     }
 }

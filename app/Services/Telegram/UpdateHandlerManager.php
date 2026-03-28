@@ -4,6 +4,47 @@ namespace App\Services\Telegram;
 
 class UpdateHandlerManager
 {
+    private const SERVICE = 'telegram-handler';
+
+    public function startProcess(): void
+    {
+        exec('sudo /usr/bin/systemctl start ' . self::SERVICE);
+    }
+
+    public function stopProcess(): void
+    {
+        exec('sudo /usr/bin/systemctl stop ' . self::SERVICE);
+    }
+
+    public function restartProcess(): void
+    {
+        exec('sudo /usr/bin/systemctl restart ' . self::SERVICE);
+    }
+
+    public function isProcessRunning(): bool
+    {
+        exec('/usr/bin/systemctl is-active ' . self::SERVICE, $out, $code);
+        return $code === 0;
+    }
+
+    public function getProcessCount(): int
+    {
+        return $this->isProcessRunning() ? 1 : 0;
+    }
+
+    public function getPid(): ?int
+    {
+        exec('/usr/bin/systemctl show ' . self::SERVICE . ' --property=MainPID --value', $out);
+        $pid = (int) trim($out[0] ?? '0');
+        return $pid > 0 ? $pid : null;
+    }
+
+    public function getProcessIds(): array
+    {
+        $pid = $this->getPid();
+        return $pid ? [$pid] : [];
+    }
+
     public function getLogFileInfo(): array|false
     {
         $logPath = config('telegram.log_path');
@@ -13,81 +54,11 @@ class UpdateHandlerManager
         }
 
         return [
-            'path' => $logPath,
-            'size' => \File::size($logPath),
+            'path'          => $logPath,
+            'size'          => \File::size($logPath),
             'last_modified' => date('Y-m-d H:i:s', \File::lastModified($logPath)),
-            'last_lines' => $this->readLastLines($logPath, 25),
+            'last_lines'    => $this->readLastLines($logPath, 25),
         ];
-    }
-
-    /**
-     * Start the Telegram handler process in the background.
-     */
-    public function startProcess(): void
-    {
-        if ($this->isProcessRunning()) {
-            return;
-        }
-
-        $logPath = config('telegram.log_path');
-        $command = "nohup php artisan telegram:handle > $logPath 2>&1 &";
-        exec($command);
-    }
-
-    /**
-     * Restart the Telegram handler process.
-     */
-    public function restartProcess(): ?int
-    {
-        if ($this->isProcessRunning()) {
-            $this->stopProcess();
-
-            $attempts = 0;
-            while ($this->isProcessRunning() && $attempts < 10) {
-                usleep(500_000);
-                $attempts++;
-            }
-        }
-
-        return $this->forceStartProcess();
-    }
-
-    private function forceStartProcess(): ?int
-    {
-        $logPath = config('telegram.log_path');
-        $php = PHP_BINARY;
-        $artisan = base_path('artisan');
-        $command = "nohup $php $artisan telegram:handle > $logPath 2>&1 & echo $!";
-        exec($command, $output);
-
-        return isset($output[0]) ? (int) $output[0] : null;
-    }
-
-    /**
-     * Stop the Telegram handler process.
-     */
-    public function stopProcess(): void
-    {
-        $processName = 'telegram:handle';
-        $command = "ps aux | grep '[a]rtisan $processName' | awk '{print $2}' | xargs kill -9";
-        exec($command);
-    }
-
-    /**
-     * Check if the Telegram handler process is running.
-     */
-    public function isProcessRunning(): bool
-    {
-        return $this->getProcessCount() > 0;
-    }
-
-    public function getProcessCount(): int
-    {
-        $processName = 'telegram:handle';
-        $command = "ps aux | grep '[a]rtisan $processName'";
-        exec($command, $output);
-
-        return count($output);
     }
 
     public function getLastLines(int $numLines): array
