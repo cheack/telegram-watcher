@@ -42,6 +42,15 @@ class Api
         return $this->api->getWebhookUpdate();
     }
 
+    public function answerCallbackQuery(string $callbackQueryId, string $text = '', bool $showAlert = false): void
+    {
+        $this->api->answerCallbackQuery([
+            'callback_query_id' => $callbackQueryId,
+            'text' => $text,
+            'show_alert' => $showAlert,
+        ]);
+    }
+
     public function setWebhook(array $params): bool {
         return $this->api->setWebhook($params);
     }
