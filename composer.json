@@ -13,12 +13,11 @@
         "danog/madelineproto": "^8.4",
         "grkamil/laravel-telegram-logging": "^1.12",
         "irazasyed/telegram-bot-sdk": "^3.14",
-        "laravel/framework": "^11.31",
+        "laravel/framework": "^12.0",
         "laravel/telescope": "^5.3",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^3.0"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": "^3.5",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
