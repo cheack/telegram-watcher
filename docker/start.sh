@@ -12,6 +12,9 @@ rm -f bootstrap/cache/packages.php bootstrap/cache/services.php \
       bootstrap/cache/config.php bootstrap/cache/routes-v7.php \
       bootstrap/cache/events.php bootstrap/cache/views.php
 
+# Sync built frontend assets into the shared volume for nginx
+cp -r /var/www/html/public/build_dist/. /var/www/html/public/build/
+
 # Run database migrations
 echo "Running migrations..."
 php artisan migrate --force

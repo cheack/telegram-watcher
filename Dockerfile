@@ -36,18 +36,16 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Copy application code
-COPY . .
+COPY --chown=www-data:www-data . .
 
-# Copy built frontend assets from node-builder stage
-COPY --from=node-builder /app/public/build ./public/build
+# Copy built frontend assets from node-builder stage into a staging dir.
+# At runtime start.sh copies them into the shared public_build volume so nginx can serve them.
+COPY --chown=www-data:www-data --from=node-builder /app/public/build ./public/build_dist
 
-# Clear stale bootstrap cache (may contain dev-only service providers from host)
-RUN rm -f bootstrap/cache/*.php
-
-# Set correct permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+# Clear stale bootstrap cache and fix permissions in a single layer
+RUN rm -f bootstrap/cache/*.php \
+    && chmod -R 775 storage bootstrap/cache \
+    && mkdir -p public/build
 
 # Copy supervisor config and startup script
 COPY docker/supervisord.conf /etc/supervisor/supervisord.conf
