@@ -24,6 +24,9 @@ Route::get('/dashboard', [DashboardController::class, 'view'])->middleware(['aut
 Route::middleware('auth')->prefix('sessions')->name('sessions.')->group(function () {
     Route::get('/', [SessionController::class, 'index'])->name('index');
     Route::get('/log', [SessionController::class, 'log'])->name('log');
+    Route::post('/login/start', [SessionController::class, 'loginStart'])->name('login.start');
+    Route::post('/login/verify', [SessionController::class, 'loginVerify'])->name('login.verify');
+    Route::post('/login/2fa', [SessionController::class, 'login2fa'])->name('login.2fa');
 });
 
 Route::middleware('auth')->prefix('service')->name('service.')->group(function () {
