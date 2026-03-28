@@ -13,35 +13,16 @@ COPY public/ public/
 RUN npm run build
 
 # Stage 2: PHP production image
-FROM php:8.4-fpm-alpine AS production
+# serversideup/php includes igbinary, pgsql, pcntl, intl and other extensions pre-built
+FROM serversideup/php:8.4-fpm-alpine AS production
 
-# Install system dependencies
-RUN apk add --no-cache \
-    git \
-    curl \
-    libpng-dev \
-    libxml2-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    postgresql-dev \
-    oniguruma-dev \
-    icu-dev \
-    linux-headers
+USER root
 
-# Install PHP extensions
-RUN docker-php-ext-install \
-    pdo \
-    pdo_pgsql \
-    pgsql \
-    mbstring \
-    xml \
-    bcmath \
-    opcache \
-    pcntl \
-    posix \
-    zip \
-    intl
+# Install supervisor
+RUN apk add --no-cache supervisor
+
+# Install igbinary (required by MadelineProto) via pre-built binary
+RUN install-php-extensions igbinary
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -60,12 +41,16 @@ COPY . .
 # Copy built frontend assets from node-builder stage
 COPY --from=node-builder /app/public/build ./public/build
 
+# Clear stale bootstrap cache (may contain dev-only service providers from host)
+RUN rm -f bootstrap/cache/*.php
+
 # Set correct permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
-# Copy and set up startup script
+# Copy supervisor config and startup script
+COPY docker/supervisord.conf /etc/supervisor/supervisord.conf
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
 

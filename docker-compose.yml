@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     volumes:
       - storage:/var/www/html/storage
+      - telegram_sessions:/var/www/html/telegram_sessions
     depends_on:
       postgres:
         condition: service_healthy
@@ -18,7 +19,7 @@ services:
     image: nginx:alpine
     restart: unless-stopped
     ports:
-      - "${APP_PORT:-80}:80"
+      - "127.0.0.1:8081:80"
     volumes:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./public:/var/www/html/public:ro
@@ -35,6 +36,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/watcher_backup.sql:/docker-entrypoint-initdb.d/01-restore.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
       interval: 5s
@@ -47,8 +49,11 @@ services:
       target: production
     restart: unless-stopped
     command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    healthcheck:
+      disable: true
     volumes:
       - storage:/var/www/html/storage
+      - telegram_sessions:/var/www/html/telegram_sessions
     depends_on:
       postgres:
         condition: service_healthy
@@ -60,3 +65,4 @@ services:
 volumes:
   postgres_data:
   storage:
+  telegram_sessions:
