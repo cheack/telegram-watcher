@@ -49,17 +49,15 @@
     "Update Account": "Сохранить",
     "Add Account": "Добавить",
 
-    "Monitoring active": "Мониторинг активен",
-    "Track Telegram channels": "Отслеживайте Telegram-каналы",
-    "in real time": "в реальном времени",
-    "Monitor account activity across multiple Telegram sessions. Get instant notifications when users join or leave channels.": "Мониторинг активности нескольких Telegram-аккаунтов. Мгновенные уведомления о вступлении и выходе из каналов.",
     "Sign in": "Войти",
-    "Go to dashboard": "Открыть панель",
+    "Strangers. Bad channels.": "Незнакомцы. Плохие каналы.",
+    "You'll know first.": "Вы узнаете первым.",
+    "Monitor who contacts your children and what channels they join — before it becomes a problem.": "Следите за тем, кто пишет вашим детям и в какие каналы они вступают — пока это не стало проблемой.",
     "Multi-session": "Мультисессия",
-    "Manage multiple Telegram accounts simultaneously from one place.": "Управляйте несколькими Telegram-аккаунтами из одного места.",
+    "Multiple Telegram accounts, one panel.": "Несколько Telegram-аккаунтов — одна панель.",
     "Instant alerts": "Мгновенные уведомления",
-    "Real-time bot notifications on channel joins, leaves, and messages from unknown contacts.": "Уведомления о вступлении в каналы, выходе из них и сообщениях от неизвестных контактов.",
+    "Channel joins, leaves, and messages from unknown senders.": "Вступления в каналы, выходы и сообщения от неизвестных.",
     "Service control": "Управление сервисом",
-    "Start, stop and monitor the handler process from the web panel.": "Запускайте, останавливайте и мониторьте обработчик из веб-панели.",
+    "Start, stop and monitor the handler from the web panel.": "Запускайте, останавливайте и мониторьте обработчик из веб-панели.",
     "private admin panel": "приватная панель управления"
 }

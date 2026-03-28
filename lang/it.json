@@ -49,17 +49,15 @@
     "Update Account": "Salva",
     "Add Account": "Aggiungi",
 
-    "Monitoring active": "Monitoraggio attivo",
-    "Track Telegram channels": "Monitora i canali Telegram",
-    "in real time": "in tempo reale",
-    "Monitor account activity across multiple Telegram sessions. Get instant notifications when users join or leave channels.": "Monitora l'attività di più account Telegram. Notifiche istantanee per accessi e uscite dai canali.",
     "Sign in": "Accedi",
-    "Go to dashboard": "Vai alla dashboard",
+    "Strangers. Bad channels.": "Sconosciuti. Canali pericolosi.",
+    "You'll know first.": "Lo saprai per primo.",
+    "Monitor who contacts your children and what channels they join — before it becomes a problem.": "Monitora chi contatta i tuoi figli e a quali canali si iscrivono — prima che diventi un problema.",
     "Multi-session": "Multi-sessione",
-    "Manage multiple Telegram accounts simultaneously from one place.": "Gestisci più account Telegram da un unico posto.",
+    "Multiple Telegram accounts, one panel.": "Più account Telegram, un solo pannello.",
     "Instant alerts": "Notifiche istantanee",
-    "Real-time bot notifications on channel joins, leaves, and messages from unknown contacts.": "Notifiche in tempo reale per accessi, uscite dai canali e messaggi da contatti sconosciuti.",
+    "Channel joins, leaves, and messages from unknown senders.": "Accessi ai canali, uscite e messaggi da mittenti sconosciuti.",
     "Service control": "Controllo del servizio",
-    "Start, stop and monitor the handler process from the web panel.": "Avvia, ferma e monitora il processo dal pannello web.",
+    "Start, stop and monitor the handler from the web panel.": "Avvia, ferma e monitora il processo dal pannello web.",
     "private admin panel": "pannello di amministrazione privato"
 }
