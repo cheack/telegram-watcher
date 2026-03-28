@@ -32,32 +32,9 @@ class CallbackHandler
 
     private function handleStatus(): void
     {
-        $manager = new UpdateHandlerManager();
-        $count = $manager->getProcessCount();
-        $logInfo = $manager->getLogFileInfo();
-
-        $status = match (true) {
-            $count === 0 => '🔴 Not running',
-            $count === 1 => '🟢 Running',
-            default => "⚠️ {$count} processes",
-        };
-
-        $lines = ["<b>Handler:</b> {$status}"];
-
-        if ($logInfo) {
-            $size = number_format($logInfo['size'] / 1024, 1) . ' KB';
-            $lines[] = "📦 {$size} · 🕐 {$logInfo['last_modified']}";
-
-            $lastLines = implode("\n", array_slice(
-                array_filter($logInfo['last_lines'], fn($l) => trim($l) !== ''),
-                -8
-            ));
-            $lastLines = preg_replace('/\x1B\[[0-9;]*m/', '', $lastLines);
-            $lines[] = '<pre>' . htmlspecialchars($lastLines) . '</pre>';
-        }
-
         $this->api->answerCallbackQuery($this->callbackQueryId);
-        $this->api->sendMessage(implode("\n", $lines), $this->chatId, 'HTML');
+        $message = (new UpdateHandlerManager())->buildStatusMessage();
+        $this->api->sendMessage($message, $this->chatId, 'HTML');
     }
 
     private function handleStart(): void

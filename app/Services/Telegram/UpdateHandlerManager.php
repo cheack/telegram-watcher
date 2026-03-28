@@ -49,6 +49,39 @@ class UpdateHandlerManager
         return $pid ? [$pid] : [];
     }
 
+    public function buildStatusMessage(): string
+    {
+        $count = $this->getProcessCount();
+        $logInfo = $this->getLogFileInfo();
+
+        $status = match (true) {
+            $count === 0 => '🔴 <b>Not running</b>',
+            $count === 1 => '🟢 <b>Running</b>',
+            default => "⚠️ <b>WARNING:</b> {$count} processes running (zombie?)",
+        };
+
+        $lines = [$status];
+
+        if ($logInfo) {
+            $size = number_format($logInfo['size'] / 1024, 1) . ' KB';
+            $lines[] = '';
+            $lines[] = "📄 <code>{$logInfo['path']}</code>";
+            $lines[] = "📦 {$size} · 🕐 {$logInfo['last_modified']}";
+
+            $lastLines = implode("\n", array_slice(
+                array_filter($logInfo['last_lines'], fn($l) => trim($l) !== ''),
+                -10
+            ));
+            $lastLines = preg_replace('/\x1B\[[0-9;]*m/', '', $lastLines);
+            $lines[] = '';
+            $lines[] = '<pre>' . htmlspecialchars($lastLines) . '</pre>';
+        } else {
+            $lines[] = "\n📄 Log not found";
+        }
+
+        return implode("\n", $lines);
+    }
+
     public function getLogFileInfo(): array|false
     {
         $logPath = config('telegram.log_path');
