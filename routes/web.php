@@ -45,7 +45,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/track/{trackedAccount}', [TrackController::class, 'save'])->name('track.update');
 });
 
-Route::post('/telegram/webhook/{token}', [TelegramController::class, 'webhook'])->name('telegram.webhook')
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/telegram/webhook/{token}', [TelegramController::class, 'webhook'])->name('telegram.webhook');
 
 require __DIR__.'/auth.php';

@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'telegram/webhook/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
