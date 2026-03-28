@@ -19,13 +19,16 @@
                         </div>
                     </div>
                     <div class="flex gap-3">
-                        <button onclick="action('start')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
+                        <button id="btn-start" onclick="action('start')" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg border border-green-700 shadow-sm transition disabled:bg-gray-100 disabled:dark:bg-gray-700 disabled:text-gray-400 disabled:dark:text-gray-500 disabled:border-gray-300 disabled:dark:border-gray-600 disabled:shadow-none disabled:cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                             Start
                         </button>
-                        <button onclick="action('restart')" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg transition">
+                        <button id="btn-restart" onclick="action('restart')" class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg border border-yellow-600 shadow-sm transition disabled:bg-gray-100 disabled:dark:bg-gray-700 disabled:text-gray-400 disabled:dark:text-gray-500 disabled:border-gray-300 disabled:dark:border-gray-600 disabled:shadow-none disabled:cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
                             Restart
                         </button>
-                        <button onclick="action('stop')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition">
+                        <button id="btn-stop" onclick="action('stop')" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg border border-red-700 shadow-sm transition disabled:bg-gray-100 disabled:dark:bg-gray-700 disabled:text-gray-400 disabled:dark:text-gray-500 disabled:border-gray-300 disabled:dark:border-gray-600 disabled:shadow-none disabled:cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
                             Stop
                         </button>
                     </div>
@@ -61,6 +64,8 @@
             const text = document.getElementById('status-text');
             const pidEl = document.getElementById('status-pid');
 
+            const running = data.count > 0;
+
             if (data.count === 0) {
                 indicator.textContent = '🔴';
                 text.textContent = 'Not running';
@@ -75,6 +80,10 @@
                 pidEl.textContent = `PIDs: ${data.pids.join(', ')}`;
             }
 
+            document.getElementById('btn-start').disabled = running;
+            document.getElementById('btn-restart').disabled = !running;
+            document.getElementById('btn-stop').disabled = !running;
+
             if (data.log) {
                 const meta = document.getElementById('log-meta');
                 const size = (data.log.size / 1024).toFixed(1) + ' KB';
@@ -87,9 +96,16 @@
             }
         }
 
+        function setButtonsDisabled(disabled) {
+            ['btn-start', 'btn-restart', 'btn-stop'].forEach(id => {
+                document.getElementById(id).disabled = disabled;
+            });
+        }
+
         async function action(type) {
             if (type === 'stop' && !confirm('Stop the service?')) return;
 
+            setButtonsDisabled(true);
             const indicator = document.getElementById('status-indicator');
             const text = document.getElementById('status-text');
             indicator.textContent = '⏳';
