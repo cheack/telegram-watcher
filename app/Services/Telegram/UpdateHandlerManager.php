@@ -4,27 +4,28 @@ namespace App\Services\Telegram;
 
 class UpdateHandlerManager
 {
-    private const SERVICE = 'telegram-handler';
+    private const PROGRAM = 'telegram-handler';
+    private const CTL = 'supervisorctl -c /etc/supervisor/supervisord.conf';
 
     public function startProcess(): void
     {
-        exec('sudo /usr/bin/systemctl start ' . self::SERVICE);
+        exec(self::CTL . ' start ' . self::PROGRAM);
     }
 
     public function stopProcess(): void
     {
-        exec('sudo /usr/bin/systemctl stop ' . self::SERVICE);
+        exec(self::CTL . ' stop ' . self::PROGRAM);
     }
 
     public function restartProcess(): void
     {
-        exec('sudo /usr/bin/systemctl restart ' . self::SERVICE);
+        exec(self::CTL . ' restart ' . self::PROGRAM);
     }
 
     public function isProcessRunning(): bool
     {
-        exec('/usr/bin/systemctl is-active ' . self::SERVICE, $out, $code);
-        return $code === 0;
+        exec(self::CTL . ' status ' . self::PROGRAM, $out);
+        return str_contains($out[0] ?? '', 'RUNNING');
     }
 
     public function getProcessCount(): int
@@ -34,9 +35,12 @@ class UpdateHandlerManager
 
     public function getPid(): ?int
     {
-        exec('/usr/bin/systemctl show ' . self::SERVICE . ' --property=MainPID --value', $out);
-        $pid = (int) trim($out[0] ?? '0');
-        return $pid > 0 ? $pid : null;
+        exec(self::CTL . ' status ' . self::PROGRAM, $out);
+        // Output: telegram-handler         RUNNING   pid 42, uptime 0:01:23
+        if (preg_match('/pid (\d+)/', $out[0] ?? '', $m)) {
+            return (int) $m[1];
+        }
+        return null;
     }
 
     public function getProcessIds(): array
