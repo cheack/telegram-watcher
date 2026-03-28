@@ -11,3 +11,5 @@ nohup.out
 /public/.well-known/
 settings.json
 docker/watcher_backup.sql
+storage/telegram_handler.lock
+storage/telegram_handler.pid
