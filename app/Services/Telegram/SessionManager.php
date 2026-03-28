@@ -2,6 +2,8 @@
 
 namespace App\Services\Telegram;
 
+use App\Services\Settings;
+
 class SessionManager
 {
     private string $sessionsPath;
@@ -13,8 +15,9 @@ class SessionManager
 
     public function getSessions(): array
     {
+        $activeSessions = Settings::get('telegram.sessions', []);
         $dirs = glob($this->sessionsPath . '/*', GLOB_ONLYDIR);
-        $sessions = array_map(fn($dir) => $this->getSessionInfo($dir), $dirs);
+        $sessions = array_map(fn($dir) => $this->getSessionInfo($dir, $activeSessions), $dirs);
         $internalNames = $this->resolveInternalNames($sessions);
 
         return array_map(fn($session) => array_merge($session, [
@@ -68,7 +71,7 @@ class SessionManager
         return $mapping;
     }
 
-    private function getSessionInfo(string $dir): array
+    private function getSessionInfo(string $dir, array $activeSessions = []): array
     {
         $name = basename($dir);
         $safeFile = $dir . '/safe.php';
@@ -90,6 +93,7 @@ class SessionManager
             'name' => $name,
             'internal_name' => null,
             'logged_in' => $loggedIn,
+            'active' => in_array($name, $activeSessions),
             'size' => $size,
             'updated_at' => $updatedAt,
             'event_handler' => $eventHandler,

@@ -116,6 +116,62 @@ class SessionController extends Controller
         }
     }
 
+    public function pause(string $name): JsonResponse
+    {
+        $sessions = Settings::get('telegram.sessions', []);
+        $sessions = array_values(array_filter($sessions, fn($s) => $s !== $name));
+        Settings::set('telegram.sessions', $sessions);
+
+        $manager = new UpdateHandlerManager();
+        if ($manager->isProcessRunning()) {
+            $manager->restartProcess();
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function resume(string $name): JsonResponse
+    {
+        $sessions = Settings::get('telegram.sessions', []);
+        if (!in_array($name, $sessions)) {
+            $sessions[] = $name;
+            Settings::set('telegram.sessions', $sessions);
+        }
+
+        $manager = new UpdateHandlerManager();
+        if ($manager->isProcessRunning()) {
+            $manager->restartProcess();
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function delete(string $name): JsonResponse
+    {
+        $sessions = Settings::get('telegram.sessions', []);
+        $sessions = array_values(array_filter($sessions, fn($s) => $s !== $name));
+        Settings::set('telegram.sessions', $sessions);
+
+        $path = base_path('telegram_sessions/' . $name);
+        if (is_dir($path) && str_starts_with(realpath($path), realpath(base_path('telegram_sessions')))) {
+            $files = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::CHILD_FIRST
+            );
+            foreach ($files as $file) {
+                $file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
+            }
+            rmdir($path);
+        }
+
+        $manager = new UpdateHandlerManager();
+        if ($manager->isProcessRunning()) {
+            $manager->restartProcess();
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
     private function finalizeSession(string $name): void
     {
         $sessions = Settings::get('telegram.sessions', []);

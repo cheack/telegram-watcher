@@ -27,6 +27,9 @@ Route::middleware('auth')->prefix('sessions')->name('sessions.')->group(function
     Route::post('/login/start', [SessionController::class, 'loginStart'])->name('login.start');
     Route::post('/login/verify', [SessionController::class, 'loginVerify'])->name('login.verify');
     Route::post('/login/2fa', [SessionController::class, 'login2fa'])->name('login.2fa');
+    Route::post('/{name}/pause', [SessionController::class, 'pause'])->name('pause');
+    Route::post('/{name}/resume', [SessionController::class, 'resume'])->name('resume');
+    Route::delete('/{name}', [SessionController::class, 'delete'])->name('delete');
 });
 
 Route::middleware('auth')->prefix('service')->name('service.')->group(function () {

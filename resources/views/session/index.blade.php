@@ -25,6 +25,7 @@
                             <th class="px-6 py-3">{{ __('Size') }}</th>
                             <th class="px-6 py-3">{{ __('Last updated') }}</th>
                             <th class="px-6 py-3">{{ __('Event handler') }}</th>
+                            <th class="px-6 py-3">{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -33,9 +34,13 @@
                                 onclick="selectSession('{{ $session['name'] }}')">
                                 <td class="px-6 py-4 font-medium font-mono">{{ $session['name'] }}</td>
                                 <td class="px-6 py-4">
-                                    @if($session['logged_in'])
+                                    @if($session['logged_in'] && $session['active'])
                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                             🟢 {{ __('Active') }}
+                                        </span>
+                                    @elseif($session['logged_in'] && !$session['active'])
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                            ⏸ {{ __('Paused') }}
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
@@ -51,6 +56,25 @@
                                 </td>
                                 <td class="px-6 py-4 font-mono text-xs text-gray-500 dark:text-gray-400">
                                     {{ $session['event_handler'] ?? '—' }}
+                                </td>
+                                <td class="px-6 py-4" onclick="event.stopPropagation()">
+                                    <div class="flex items-center gap-2">
+                                        @if($session['logged_in'] && $session['active'])
+                                            <button onclick="pauseSession('{{ $session['name'] }}')"
+                                                class="px-2 py-1 text-xs font-medium rounded bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-300 dark:hover:bg-yellow-900/70 transition">
+                                                {{ __('Pause') }}
+                                            </button>
+                                        @elseif($session['logged_in'] && !$session['active'])
+                                            <button onclick="resumeSession('{{ $session['name'] }}')"
+                                                class="px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/70 transition">
+                                                {{ __('Resume') }}
+                                            </button>
+                                        @endif
+                                        <button onclick="confirmDelete('{{ $session['name'] }}')"
+                                            class="px-2 py-1 text-xs font-medium rounded bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:hover:bg-red-900/70 transition">
+                                            {{ __('Delete') }}
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -163,9 +187,28 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-sm mx-4">
+            <div class="px-6 py-5">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">{{ __('Delete session?') }}</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('This will permanently delete the session files. This cannot be undone.') }}</p>
+                <p class="mt-2 text-sm font-mono font-medium text-gray-900 dark:text-gray-100" id="delete-session-name"></p>
+            </div>
+            <div class="px-6 pb-5 flex justify-end gap-2">
+                <button onclick="closeDeleteModal()" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">{{ __('Cancel') }}</button>
+                <button onclick="doDelete()" id="btn-delete-confirm"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition">
+                    {{ __('Delete') }}
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentSession = null;
         let refreshTimer = null;
+        let pendingDeleteName = null;
         const logUrl = '{{ route('sessions.log') }}';
         const csrfToken = '{{ csrf_token() }}';
 
@@ -207,6 +250,48 @@
 
         fetchLog();
         refreshTimer = setInterval(fetchLog, 5000);
+
+        // Session actions
+        async function sessionAction(name, method, url) {
+            const res = await fetch(url, {
+                method,
+                headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+            });
+            if (res.ok) {
+                location.reload();
+            }
+        }
+
+        function pauseSession(name) {
+            sessionAction(name, 'POST', `/sessions/${encodeURIComponent(name)}/pause`);
+        }
+
+        function resumeSession(name) {
+            sessionAction(name, 'POST', `/sessions/${encodeURIComponent(name)}/resume`);
+        }
+
+        function confirmDelete(name) {
+            pendingDeleteName = name;
+            document.getElementById('delete-session-name').textContent = name;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteName = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        async function doDelete() {
+            if (!pendingDeleteName) return;
+            const btn = document.getElementById('btn-delete-confirm');
+            btn.disabled = true;
+            btn.textContent = @json(__('Deleting...'));
+            await sessionAction(pendingDeleteName, 'DELETE', `/sessions/${encodeURIComponent(pendingDeleteName)}`);
+        }
+
+        document.getElementById('delete-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
 
         // Add Session Modal
         function openAddSession() {
@@ -325,7 +410,10 @@
                 else if (!document.getElementById('step-code').classList.contains('hidden')) submitCode();
                 else if (!document.getElementById('step-2fa').classList.contains('hidden')) submit2fa();
             }
-            if (e.key === 'Escape') closeAddSession();
+            if (e.key === 'Escape') {
+                closeAddSession();
+                closeDeleteModal();
+            }
         });
     </script>
 </x-app-layout>
