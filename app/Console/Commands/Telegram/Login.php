@@ -22,7 +22,7 @@ class Login extends Command
         $settings = new AppInfo()
             ->setApiId((int)config('telegram.app.id'))
             ->setApiHash(config('telegram.app.hash'));
-        $MadelineProto = new API('telegram_sessions/' . $sessionName, $settings);
+        $MadelineProto = new API(base_path('telegram_sessions/' . $sessionName), $settings);
 
         $MadelineProto->phoneLogin(Tools::readLine('Enter your phone number: '));
         $authorization = $MadelineProto->completePhoneLogin(Tools::readLine('Enter the phone code: '));

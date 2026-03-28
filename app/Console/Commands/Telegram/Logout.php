@@ -15,7 +15,7 @@ class Logout extends Command
     public function handle(): void
     {
         $sessionName = $this->argument('session_name');
-        new API('telegram_sessions/' . $sessionName)->logout();
+        new API(base_path('telegram_sessions/' . $sessionName))->logout();
 
         $sessions = Settings::get('telegram.sessions', []);
         unset($sessions[$sessionName]);

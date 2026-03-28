@@ -23,7 +23,7 @@ class HandleEvents extends Command
 
         $MadelineProtos = [];
         foreach ($sessions as $session) {
-            $MadelineProtos[] = new API('telegram_sessions/' . $session);
+            $MadelineProtos[] = new API(base_path('telegram_sessions/' . $session));
         }
 
         API::startAndLoopMulti($MadelineProtos, UpdateHandler::class);
