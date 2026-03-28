@@ -20,10 +20,10 @@
                         @foreach($trackedAccounts as $account)
                             <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
                                 <p class="text-gray-900 dark:text-gray-100">
-                                    <strong>{{ $account->account_name ?? 'No Name' }}</strong> ({{ $account->account_id }})
+                                    <strong>{{ $account->account_name ?? __('No Name') }}</strong> ({{ $account->account_id }})
                                 </p>
                                 <p class="text-gray-600 dark:text-gray-400">{{ $account->notes }}</p>
-                                <a href="{{ route('track.show-edit-form', $account->id) }}" class="text-blue-500 hover:text-blue-700">Edit</a>
+                                <a href="{{ route('track.show-edit-form', $account->id) }}" class="text-blue-500 hover:text-blue-700">{{ __('Edit') }}</a>
                             </div>
                         @endforeach
                     </div>

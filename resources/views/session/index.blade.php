@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Sessions
+            {{ __('Sessions') }}
         </h2>
     </x-slot>
 
@@ -13,11 +13,11 @@
                 <table class="w-full text-sm text-left">
                     <thead class="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-xs">
                         <tr>
-                            <th class="px-6 py-3">Session</th>
-                            <th class="px-6 py-3">Status</th>
-                            <th class="px-6 py-3">Size</th>
-                            <th class="px-6 py-3">Last updated</th>
-                            <th class="px-6 py-3">Event handler</th>
+                            <th class="px-6 py-3">{{ __('Session') }}</th>
+                            <th class="px-6 py-3">{{ __('Status') }}</th>
+                            <th class="px-6 py-3">{{ __('Size') }}</th>
+                            <th class="px-6 py-3">{{ __('Last updated') }}</th>
+                            <th class="px-6 py-3">{{ __('Event handler') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -28,11 +28,11 @@
                                 <td class="px-6 py-4">
                                     @if($session['logged_in'])
                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                            🟢 Active
+                                            🟢 {{ __('Active') }}
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
-                                            ⚪ Not initialized
+                                            ⚪ {{ __('Not initialized') }}
                                         </span>
                                     @endif
                                 </td>
@@ -55,13 +55,13 @@
             <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-3">
-                        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">Log</h3>
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ __('Log') }}</h3>
                         <!-- Session Tabs -->
                         <div class="flex gap-1">
                             <button onclick="selectSession(null)"
                                 id="tab-all"
                                 class="tab-btn px-3 py-1 rounded text-xs font-medium transition bg-indigo-600 text-white">
-                                All
+                                {{ __('All') }}
                             </button>
                             @foreach($sessions as $session)
                                 <button onclick="selectSession('{{ $session['name'] }}')"
@@ -74,7 +74,7 @@
                     </div>
                     <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                         <input type="checkbox" id="auto-refresh" checked class="rounded">
-                        Auto-refresh
+                        {{ __('Auto-refresh') }}
                     </label>
                 </div>
                 <pre id="log-output" class="bg-gray-950 text-xs rounded-lg p-4 overflow-x-hidden overflow-y-auto h-80 font-mono" style="color: #86efac; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;"></pre>
@@ -94,7 +94,7 @@
             const data = await res.json();
 
             const el = document.getElementById('log-output');
-            el.textContent = data.lines.join('\n') || '(no log lines)';
+            el.textContent = data.lines.join('\n') || @json(__('(no log lines)'));
             el.scrollTop = el.scrollHeight;
         }
 

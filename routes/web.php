@@ -12,6 +12,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/lang/{locale}', function (string $locale) {
+    if (array_key_exists($locale, config('app.available_locales', []))) {
+        session(['locale' => $locale]);
+    }
+    return back();
+})->name('lang.switch');
+
 Route::get('/dashboard', [DashboardController::class, 'view'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->prefix('sessions')->name('sessions.')->group(function () {
