@@ -1,0 +1,20 @@
+FROM serversideup/php:8.4-fpm-alpine
+
+USER root
+
+RUN apk add --no-cache supervisor
+
+RUN install-php-extensions igbinary
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+COPY docker/start.dev.sh /start.dev.sh
+RUN chmod +x /start.dev.sh
+
+COPY docker/supervisord.conf /etc/supervisor/supervisord.conf
+
+WORKDIR /var/www/html
+
+EXPOSE 9000
+
+CMD ["/start.dev.sh"]
