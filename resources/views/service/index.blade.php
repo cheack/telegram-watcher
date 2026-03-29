@@ -10,7 +10,7 @@
 
             <!-- Status Card -->
             <div class="p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <span id="status-indicator" class="text-3xl">⏳</span>
                         <div>
@@ -18,7 +18,7 @@
                             <p id="status-pid" class="text-sm text-gray-500 dark:text-gray-400"></p>
                         </div>
                     </div>
-                    <div class="flex gap-3">
+                    <div class="flex flex-wrap gap-2">
                         <button id="btn-start" onclick="action('start')" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg border border-green-700 shadow-sm transition disabled:bg-gray-100 disabled:dark:bg-gray-700 disabled:text-gray-400 disabled:dark:text-gray-500 disabled:border-gray-300 disabled:dark:border-gray-600 disabled:shadow-none disabled:cursor-not-allowed">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                             {{ __('Start') }}
@@ -37,9 +37,9 @@
 
             <!-- Log Card -->
             <div class="p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                     <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ __('Log') }}</h3>
-                    <div class="flex items-center gap-4">
+                    <div class="flex flex-wrap items-center gap-3">
                         <span id="log-meta" class="text-xs text-gray-500 dark:text-gray-400"></span>
                         <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                             <input type="checkbox" id="auto-refresh" checked class="rounded">
@@ -47,7 +47,7 @@
                         </label>
                     </div>
                 </div>
-                <pre id="log-output" class="bg-gray-950 text-green-300 text-xs rounded-lg p-4 overflow-x-hidden overflow-y-auto h-96 font-mono" style="color: #86efac; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;"></pre>
+                <pre id="log-output" class="bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-green-300 text-xs rounded-lg p-4 overflow-x-hidden overflow-y-auto h-96 font-mono" style="white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;"></pre>
             </div>
 
         </div>

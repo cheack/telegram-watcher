@@ -17,7 +17,8 @@
                         + {{ __('Add Session') }}
                     </button>
                 </div>
-                <table class="w-full text-sm text-left">
+                <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left min-w-[640px]">
                     <thead class="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-xs">
                         <tr>
                             <th class="px-6 py-3">{{ __('Session') }}</th>
@@ -80,15 +81,16 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
 
             <!-- Log Viewer -->
             <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <div class="flex flex-wrap items-center gap-2">
                         <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ __('Log') }}</h3>
                         <!-- Session Tabs -->
-                        <div class="flex gap-1">
+                        <div class="flex flex-wrap gap-1">
                             <button onclick="selectSession(null)"
                                 id="tab-all"
                                 class="tab-btn px-3 py-1 rounded text-xs font-medium transition bg-indigo-600 text-white">
@@ -108,7 +110,7 @@
                         {{ __('Auto-refresh') }}
                     </label>
                 </div>
-                <pre id="log-output" class="bg-gray-950 text-xs rounded-lg p-4 overflow-x-hidden overflow-y-auto h-80 font-mono" style="color: #86efac; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;"></pre>
+                <pre id="log-output" class="bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-green-300 text-xs rounded-lg p-4 overflow-x-hidden overflow-y-auto h-80 font-mono" style="white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;"></pre>
             </div>
 
         </div>
