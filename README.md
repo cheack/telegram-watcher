@@ -185,7 +185,7 @@ docker run --rm -v telegram-watcher_storage:/data -v $(pwd):/backup alpine \
 
 ## Tech Stack
 
-- [Laravel 11](https://laravel.com/) — PHP framework
+- [Laravel 13](https://laravel.com/) — PHP framework
 - [MadelineProto](https://docs.madelineproto.xyz/) — Telegram client library
 - [Telegram Bot SDK](https://telegram-bot-sdk.readme.io/) — Bot API
 - PostgreSQL — Database
